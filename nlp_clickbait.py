@@ -73,11 +73,12 @@ from transformers import TrainingArguments, Trainer
 training_args = TrainingArguments(
     evaluation_strategy="epoch",
     output_dir="./checkpoints",
-    save_steps=20000,
+    save_steps=50000,
     eval_steps=500,
-    num_train_epochs=6,
+    per_device_train_batch_size=32,
+    num_train_epochs=5,
     save_total_limit=5,
-    learning_rate=5e-5,
+    learning_rate=3e-5,
 )
 
 trainer = Trainer(
@@ -97,6 +98,8 @@ import torch
 model_path = 'model/clickbert.pth'
 model_path_bin = 'model/clickbert.bin'
 tokenizer_path = 'model/tokenizer'
+
+!mkdir model
 
 torch.save(model.state_dict(), model_path)
 torch.save(model.state_dict(), model_path_bin)
@@ -188,11 +191,7 @@ tokenizer = BertTokenizer.from_pretrained(tokenizer_path)
 
 classifier = pipeline(task='text-classification', model=model, tokenizer=tokenizer)
 
-result = trainer.evaluate(tokenized_datasets["test"])
-
-print(result)
-
-input_text1 = "Shocking New Discovery! Scientists Uncover a Miracle Cure for Aging You Won't Believe!"
-input_text2 = "Recent Advancements in Gerontology"
+input_text1 = "New Study Reveals Suprising Benefits of Regular Excercise"
+input_text2 = "Mind Blowing Secrets Revealed: LEARN HOW TO MAKE $1000 a week from home!"
 print(classifier(input_text1))
 print(classifier(input_text2))
